@@ -1,14 +1,28 @@
-import { Component, Input } from '@angular/core';
+import { Component, input, Input, InputSignal } from '@angular/core';
 import { TaskItem } from '../../../../core/type/task-item.type';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+
 
 @Component({
   selector: 'app-task-item',
-  imports: [],
+  imports: [
+    MatCheckboxModule
+  ],
   templateUrl: './task-item.component.html',
   styleUrl: './task-item.component.scss',
   standalone: true
 })
 export class TaskItemComponent {
-  @Input({required: true}) taskItem!: TaskItem;
+  public taskItem: InputSignal<TaskItem> = input.required<TaskItem>();
 
+  check(checked : boolean) {
+    // TODO : send to backend
+
+    if (checked) {
+      this.taskItem().completed_by = "moi"
+    }
+    else {
+      this.taskItem().completed_by = null
+    }
+  }
 }

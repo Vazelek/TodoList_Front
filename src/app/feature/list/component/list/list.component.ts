@@ -38,7 +38,7 @@ export class ListComponent {
       name: "tache 2",
       end_date: new Date(),
       index: 0,
-      completed_by: null,
+      completed_by: "ta mère",
     },
   ];
 
