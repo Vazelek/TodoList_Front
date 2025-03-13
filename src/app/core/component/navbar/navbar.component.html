@@ -1,3 +1,22 @@
-<div class="navbar-container">
-  <p>Ceci est la navbar</p>
-</div>
+<mat-toolbar color="primary" class="sticky" id="navbar">
+  <button mat-icon-button (click)="navigationService.navigateTo('/')">
+    <img src="assets/logo.png" alt="">
+      <!-- image -->
+  </button>
+
+  <span>BEE PRODUCTIVE</span>
+
+  <span class="gap"></span>
+
+  @if (false) {
+    <button mat-icon-button (click)="navigationService.navigateTo('/account')">
+      <!-- <img [src]="userProfilePicture" alt="User Profile" class="profile-picture"> -->
+        pp
+    </button>
+  }
+  @else {
+    <button mat-button color="accent" (click)="navigationService.navigateTo('/log-in')">Log In</button>
+    <button mat-button color="accent" (click)="navigationService.navigateTo('/sign-up')">Sign Up</button>
+  }
+
+</mat-toolbar>
