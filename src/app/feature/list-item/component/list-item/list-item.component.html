@@ -1,5 +1,4 @@
-<div class="drag-drop-element" cdkDrag>
+<div class="content">
   <div>logo</div>
-  <a href="./list/{{ listItem.id }}">{{ listItem.name }}</a>
-  <div>nom</div>
+  <div class="list-name" (click)="navigationService.navigateTo('/list/' + listItem.id)">{{ listItem.name }}</div>
 </div>

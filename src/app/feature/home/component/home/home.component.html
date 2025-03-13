@@ -1,7 +1,9 @@
 liste de taches :
 
 <div cdkDropList class="drag-drop-list" (cdkDropListDropped)="drop($event)">
-  @for (list of lists; track lists) {
-    <app-list-item [listItem]="list"></app-list-item>
+  @for (list of lists; track list) {
+    <div class="drag-drop-element" cdkDrag>
+      <app-list-item [listItem]="list"></app-list-item>
+    </div>
   }
 </div>

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import {MatListModule} from '@angular/material/list';
 import {MatDividerModule} from '@angular/material/divider';
-import {CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray} from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ListItem } from '../../../../core/type/list-item.type';
 import { ListItemComponent } from '../../../list-item/component/list-item/list-item.component';
 
@@ -11,6 +11,7 @@ import { ListItemComponent } from '../../../list-item/component/list-item/list-i
     MatListModule,
     MatDividerModule,
     CdkDropList,
+    CdkDrag,
     ListItemComponent
   ],
   templateUrl: './home.component.html',
