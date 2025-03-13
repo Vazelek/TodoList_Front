@@ -20,7 +20,8 @@ import { NavigationService } from '../../../../core/service/navigation.service';
     MatSnackBarModule
   ],
   templateUrl: './signin.component.html',
-  styleUrl: './signin.component.scss'
+  styleUrl: './signin.component.scss',
+  standalone: true
 })
 export class SigninComponent {
   loginForm: FormGroup;
