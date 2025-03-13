@@ -1,7 +1,7 @@
 <div class="login-container">
   <mat-card>
     <mat-card-header>
-      <mat-card-title>Log In<br><br></mat-card-title>
+      <mat-card-title>Sign In<br><br></mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
@@ -28,7 +28,7 @@
 
         <div class="actions">
           <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">
-            Log In
+            Sign In
           </button>
         </div>
       </form>
