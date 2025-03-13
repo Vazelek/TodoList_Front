@@ -11,7 +11,6 @@ import { ListItemComponent } from '../../../list-item/component/list-item/list-i
     MatListModule,
     MatDividerModule,
     CdkDropList,
-    CdkDrag,
     ListItemComponent
   ],
   templateUrl: './home.component.html',

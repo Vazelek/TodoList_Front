@@ -1,0 +1,15 @@
+.drag-drop-element {
+  padding: 20px 10px;
+  border-bottom: solid 1px #ccc;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: move;
+  background: white;
+}
+
+.drag-drop-element:last-child {
+  border: none;
+}
