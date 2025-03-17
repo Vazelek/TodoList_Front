@@ -1,32 +1,29 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  inject,
-  OnInit,
-  signal,
-  WritableSignal
-} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray } from '@angular/cdk/drag-drop';
-import { TaskItem } from '../../../../core/type/task-item.type';
-import { TaskItemComponent } from '../../../task-item/component/task-item/task-item.component';
+import {Component, effect, inject, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+import {TaskItem} from '../../../../core/type/task-item.type';
+import {TaskItemComponent} from '../../../task-item/component/task-item/task-item.component';
 import {HttpClient} from '@angular/common/http';
 import {BACKEND_URI} from '../../../../core/constant/url.constant';
-import {ListItem} from '../../../../core/type/list-item.type';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle, MatDateRangePicker} from '@angular/material/datepicker';
-import {DateAdapter, provideNativeDateAdapter} from '@angular/material/core';
+import {provideNativeDateAdapter} from '@angular/material/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
-import {subscribe} from 'node:diagnostics_channel';
 import {MatList, MatListItem} from '@angular/material/list';
 import {User} from '../../../../core/type/user.type';
-import {sign} from 'node:crypto';
+import {SocketService} from '../../../../core/service/socket.service';
 
-interface List { name: string , id: number }
-interface GrantAccess { email: string , list_id: number }
+interface List {
+  name: string,
+  id: number
+}
+
+interface GrantAccess {
+  email: string,
+  list_id: number
+}
 
 @Component({
   selector: 'app-list',
@@ -53,9 +50,9 @@ interface GrantAccess { email: string , list_id: number }
 export class ListComponent implements OnInit {
   public id: string | null = null;
 
-  public taskItems : TaskItem[] = [];
+  public taskItems: TaskItem[] = [];
 
-  public listItem : List | undefined = undefined;
+  public listItem: List | undefined = undefined;
 
   public users: User[] = [];
 
@@ -71,20 +68,40 @@ export class ListComponent implements OnInit {
 
   private readonly http: HttpClient = inject(HttpClient);
 
-  constructor(private route: ActivatedRoute, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private route: ActivatedRoute,
+    private socketService: SocketService
+  ) {
+    this.id = this.route.snapshot.paramMap.get('id');
+
+    let defined = this.socketService.defined
+    effect(() => {
+      if (defined()) {
+        this.socketService.sendMessage("enterList", this.id);
+
+        this.socketService.onMessage("moveTaskItem").subscribe((data) => {
+          moveItemInArray(this.taskItems, data.previousIndex, data.currentIndex);
+        });
+
+        this.socketService.onMessage("addTask").subscribe((data) => {
+          this.taskItems.push(data.task)
+        });
+      }
+    })
+  }
 
   public ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get('id');
 
-    this.http.get<List>(`${BACKEND_URI}/list/${this.id}`, { withCredentials: true}).subscribe((list: List) => {
+    this.http.get<List>(`${BACKEND_URI}/list/${this.id}`, {withCredentials: true}).subscribe((list: List) => {
       this.listItem = list;
     })
 
-    this.http.get<TaskItem[]>(`${BACKEND_URI}/list/${this.id}/items`, { withCredentials: true}).subscribe((tasks: TaskItem[]) => {
-      this.taskItems = tasks.sort((a, b) =>  a.position - b.position);
+    this.http.get<TaskItem[]>(`${BACKEND_URI}/list/${this.id}/items`, {withCredentials: true}).subscribe((tasks: TaskItem[]) => {
+      this.taskItems = tasks.sort((a, b) => a.position - b.position);
     })
 
-    this.http.get<User[]>(`${BACKEND_URI}/list/${this.id}/users`, { withCredentials: true}).subscribe((users: User[]) => {
+    this.http.get<User[]>(`${BACKEND_URI}/list/${this.id}/users`, {withCredentials: true}).subscribe((users: User[]) => {
       this.users = users;
     })
 
@@ -99,7 +116,14 @@ export class ListComponent implements OnInit {
   }
 
   public drop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.taskItems, event.previousIndex, event.currentIndex);
+    if (event.previousIndex == event.currentIndex) {
+      return
+    }
+    this.socketService.sendMessage("moveTaskItem", {
+      id: this.id,
+      previousIndex: event.previousIndex,
+      currentIndex: event.currentIndex
+    })
   }
 
   public onNewTaskSubmit(): void {
@@ -110,9 +134,9 @@ export class ListComponent implements OnInit {
         end_date: this.dateFormControl.value?.toString(),
         position: this.taskItems.length,
       },
-      { withCredentials: true }
+      {withCredentials: true}
     ).subscribe((task: TaskItem) => {
-      this.taskItems.push(task);
+      this.socketService.sendMessage("addTask", {id: this.id, task: task})
     })
   }
 
@@ -123,7 +147,7 @@ export class ListComponent implements OnInit {
         email: this.emailFormControl.value,
         list_id: parseInt(this.id as string),
       },
-      { withCredentials: true }
+      {withCredentials: true}
     ).subscribe(() => {
       this.users.push({email: this.emailFormControl.value as string, has_right: 0});
     })

@@ -1,9 +1,8 @@
-import {ChangeDetectorRef, Component, inject, OnInit, Signal} from '@angular/core';
+import {Component, effect, inject, OnInit, Signal} from '@angular/core';
 import {MatListModule} from '@angular/material/list';
 import {MatDividerModule} from '@angular/material/divider';
-import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray } from '@angular/cdk/drag-drop';
-import { ListItem } from '../../../../core/type/list-item.type';
-import { ListItemComponent } from '../../../list-item/component/list-item/list-item.component';
+import {ListItem} from '../../../../core/type/list-item.type';
+import {ListItemComponent} from '../../../list-item/component/list-item/list-item.component';
 import {HttpClient} from '@angular/common/http';
 import {BACKEND_URI} from '../../../../core/constant/url.constant';
 import {MatButton} from '@angular/material/button';
@@ -11,8 +10,8 @@ import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/m
 import {MatFormField, MatHint, MatLabel, MatSuffix} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {TaskItem} from '../../../../core/type/task-item.type';
 import {AuthenticationStore} from '../../../../core/store/authentication.store';
+import {SocketService} from '../../../../core/service/socket.service';
 
 @Component({
   selector: 'app-home',
@@ -36,7 +35,7 @@ import {AuthenticationStore} from '../../../../core/store/authentication.store';
   standalone: true
 })
 export class HomeComponent implements OnInit {
-  public listItems : ListItem[] = [];
+  public listItems: ListItem[] = [];
 
   public newListFormGroup!: FormGroup;
 
@@ -46,8 +45,24 @@ export class HomeComponent implements OnInit {
 
   private readonly http: HttpClient = inject(HttpClient);
 
-  public ngOnInit() {
-    this.http.get<ListItem[]>(`${BACKEND_URI}/lists`, { withCredentials: true}).subscribe((lists: ListItem[]) => {
+  constructor(
+    private socketService: SocketService,
+  ) {
+    let defined = this.socketService.defined
+    effect(() => {
+      if (defined()) {
+        this.socketService.onMessage("grantAccess").subscribe((data) => {
+          // TODO : ajouter liste
+        });
+        this.socketService.onMessage("removeAccess").subscribe((data) => {
+          // TODO : enlever liste
+        });
+      }
+    })
+  }
+
+  public ngOnInit(): void {
+    this.http.get<ListItem[]>(`${BACKEND_URI}/lists`, {withCredentials: true}).subscribe((lists: ListItem[]) => {
       this.listItems = lists;
     })
 
@@ -62,7 +77,7 @@ export class HomeComponent implements OnInit {
       {
         name: this.nameFormControl.value,
       },
-      { withCredentials: true }
+      {withCredentials: true}
     ).subscribe((list: ListItem) => {
       this.listItems.push(list);
     })
