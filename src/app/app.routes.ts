@@ -5,8 +5,20 @@ import { SigninComponent } from './feature/signin/component/signin/signin.compon
 import { SignupComponent } from './feature/signup/component/signup/signup.component';
 
 export const routes: Routes = [
-  {path: "", component: HomeComponent},
-  {path: "list/:id", component: ListComponent},
-  {path: "signin", component: SigninComponent},
-  {path: "signup", component: SignupComponent},
+  {
+    path: "",
+    component: HomeComponent
+  },
+  {
+    path: "list/:id",
+    component: ListComponent
+  },
+  {
+    path: "signin",
+    component: SigninComponent
+  },
+  {
+    path: "signup",
+    component: SignupComponent
+  },
 ];

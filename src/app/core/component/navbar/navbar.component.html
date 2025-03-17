@@ -8,11 +8,8 @@
 
   <span class="gap"></span>
 
-  @if (false) {
-    <button mat-icon-button (click)="navigationService.navigateTo('/account')">
-      <!-- <img [src]="userProfilePicture" alt="User Profile" class="profile-picture"> -->
-        pp
-    </button>
+  @if (isLoggedIn()) {
+    <button mat-button color="accent" (click)="authenticationStore.logout()">Log out</button>
   }
   @else {
     <button mat-button color="accent" (click)="navigationService.navigateTo('/signin')">Sign In</button>

@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, Signal} from '@angular/core';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import { NavigationService } from '../../service/navigation.service';
 import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon'; 
+import {MatIconModule} from '@angular/material/icon';
+import {AuthenticationStore} from '../../store/authentication.store';
+import {HttpClient, HttpClientModule, provideHttpClient} from '@angular/common/http';
 
 
 
@@ -11,12 +13,22 @@ import {MatIconModule} from '@angular/material/icon';
   imports: [
     MatToolbarModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent {
-  constructor (protected navigationService : NavigationService) {}
+  public readonly authenticationStore: AuthenticationStore = inject(AuthenticationStore);
+
+  public readonly isLoggedIn: Signal<boolean> = this.authenticationStore.isLoggedIn;
+
+  constructor (protected navigationService : NavigationService) {
+    effect(() => {
+      console.log(this.isLoggedIn())
+    });
+  }
 }
+

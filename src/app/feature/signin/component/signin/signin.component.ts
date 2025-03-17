@@ -11,6 +11,7 @@ import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {BACKEND_URI} from '../../../../core/component/constant/url.constant';
 import {User} from '../../../../core/type/user.type';
+import {AuthenticationStore} from '../../../../core/store/authentication.store';
 
 @Component({
   selector: 'app-signin',
@@ -22,12 +23,10 @@ import {User} from '../../../../core/type/user.type';
     MatButtonModule,
     MatIconModule,
     MatSnackBarModule,
-    HttpClientModule
   ],
   templateUrl: './signin.component.html',
   styleUrl: './signin.component.scss',
   standalone: true,
-  providers: [HttpClient]
 })
 export class SigninComponent {
   loginForm: FormGroup;
@@ -38,6 +37,8 @@ export class SigninComponent {
   private readonly http: HttpClient = inject(HttpClient);
 
   private readonly router: Router = inject(Router);
+
+  private readonly authenticationStore: AuthenticationStore = inject(AuthenticationStore);
 
   constructor(
     private fb: FormBuilder,
@@ -56,7 +57,7 @@ export class SigninComponent {
     }
     this.http.post(`${BACKEND_URI}/auth/login`, user, {withCredentials: true, responseType: 'json'}).subscribe({
       next: (response: any) => {
-        console.log('Login next:', response);
+        this.authenticationStore.login();
         this.router.navigate(['']).then();
       },
       error: (error: any) => {
