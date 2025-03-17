@@ -23,12 +23,8 @@ import {HttpClient, HttpClientModule, provideHttpClient} from '@angular/common/h
 export class NavbarComponent {
   public readonly authenticationStore: AuthenticationStore = inject(AuthenticationStore);
 
-  public readonly isLoggedIn: Signal<boolean> = this.authenticationStore.isLoggedIn;
+  public readonly loggedUserEmail: Signal<string | undefined> = this.authenticationStore.loggedUserEmail;
 
-  constructor (protected navigationService : NavigationService) {
-    effect(() => {
-      console.log(this.isLoggedIn())
-    });
-  }
+  constructor (protected navigationService : NavigationService) {}
 }
 

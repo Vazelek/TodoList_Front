@@ -4,41 +4,36 @@ import {BACKEND_URI} from '../component/constant/url.constant';
 import {catchError, of} from 'rxjs';
 
 interface IsLoggedIn {
-  isLoggedIn: boolean
+  isLoggedIn: string | undefined;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationStore {
-  public readonly isLoggedIn: Signal<boolean> = computed(() => this.isLoggedIn$());
+  public readonly loggedUserEmail: Signal<string | undefined> = computed(() => this.loggedUserEmail$());
 
-  private isLoggedIn$: WritableSignal<boolean> = signal(false);
+  private loggedUserEmail$: WritableSignal<string | undefined> = signal(undefined);
 
   private readonly http: HttpClient = inject(HttpClient);
 
   constructor() {
     this.http.get<IsLoggedIn>(`${BACKEND_URI}/auth`, { withCredentials: true }).pipe(
       catchError(() => {
-        return of(false);
+        return of({ isLoggedIn: undefined});
       })
-    ).subscribe((isLoggedIn: boolean | IsLoggedIn) => {
-      if (!isLoggedIn) {
-        this.isLoggedIn$.set(false);
-      }
-      else {
-        this.isLoggedIn$.set((isLoggedIn as IsLoggedIn).isLoggedIn)
-      }
+    ).subscribe((isLoggedIn: IsLoggedIn) => {
+        this.loggedUserEmail$.set(isLoggedIn.isLoggedIn)
     })
   }
 
-  public login(): void {
-    this.isLoggedIn$.set(true);
+  public login(email: string): void {
+    this.loggedUserEmail$.set(email);
   }
 
   public logout(): void {
     this.http.post(`${BACKEND_URI}/auth/logout`, null, { withCredentials: true }).subscribe(() => {
-      this.isLoggedIn$.set(false);
+      this.loggedUserEmail$.set(undefined);
     })
   }
 }

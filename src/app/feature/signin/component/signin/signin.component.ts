@@ -57,7 +57,7 @@ export class SigninComponent {
     }
     this.http.post(`${BACKEND_URI}/auth/login`, user, {withCredentials: true, responseType: 'json'}).subscribe({
       next: (response: any) => {
-        this.authenticationStore.login();
+        this.authenticationStore.login(user.email);
         this.router.navigate(['']).then();
       },
       error: (error: any) => {

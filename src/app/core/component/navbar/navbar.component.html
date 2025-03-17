@@ -6,9 +6,9 @@
 
   <span>BEE PRODUCTIVE</span>
 
-  <span class="gap"></span>
+  <span class="gap"> {{loggedUserEmail()}}</span>
 
-  @if (isLoggedIn()) {
+  @if (loggedUserEmail()) {
     <button mat-button color="accent" (click)="authenticationStore.logout()">Log out</button>
   }
   @else {
