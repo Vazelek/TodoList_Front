@@ -3,6 +3,8 @@ import { TaskItem } from '../../../../core/type/task-item.type';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {AuthenticationStore} from '../../../../core/store/authentication.store';
 import {DatePipe} from '@angular/common';
+import {HttpClient} from '@angular/common/http';
+import {BACKEND_URI} from '../../../../core/component/constant/url.constant';
 
 
 @Component({
@@ -20,12 +22,11 @@ export class TaskItemComponent {
 
   private readonly userEmail: string = inject(AuthenticationStore).loggedUserEmail() ?? '';
 
-  check(checked : boolean) {
-    if (checked) {
-      this.taskItem().completed_by = this.userEmail
-    }
-    else {
-      this.taskItem().completed_by = null
-    }
+  private readonly http: HttpClient = inject(HttpClient);
+
+  public check(checked : boolean) {
+    this.taskItem().completed_by = checked ? this.userEmail : null;
+
+    this.http.put(`${BACKEND_URI}/list/update`, this.taskItem(), {withCredentials: true}).subscribe();
   }
 }
