@@ -1,6 +1,6 @@
 export interface ListItem {
-  list_id: number,
-  list_name: string,
+  id: number,
+  name: string,
   has_right: number,
   user_email: string,
 }

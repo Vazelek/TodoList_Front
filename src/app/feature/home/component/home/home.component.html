@@ -2,9 +2,9 @@ TO DO lists
 <br>
 
 <div class="drag-drop-list">
-  @for (list of listItems; track list) {
+  @for (list of listItems; track $index) {
     <div>
-      <app-list-item [listItem]="list"></app-list-item>
+      <app-list-item [listItem]="list"/>
     </div>
   }
 </div>
