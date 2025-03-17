@@ -19,7 +19,7 @@ import { SocketService } from '../../../../core/service/socket.service';
   standalone: true
 })
 export class ListComponent {
-  id: string | null = null;
+  protected id: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,7 +33,6 @@ export class ListComponent {
         this.socketService.sendMessage("enterList", this.id);
 
         this.socketService.onMessage("moveTaskItem").subscribe((data) => {
-          console.log(data)
           moveItemInArray(this.tasks, data.previousIndex, data.currentIndex);
         });
       }

@@ -1,5 +1,5 @@
 <div class="content">
-  <mat-checkbox type="checkbox" (change)="check($event.checked)" [checked]="taskItem().completed_by != null"></mat-checkbox>
+  <mat-checkbox type="checkbox" (change)="check($event)" [checked]="taskItem().completed_by != null"></mat-checkbox>
   <div [class.done]="taskItem().completed_by != null">{{ taskItem().name }}</div>
   @if (taskItem().completed_by != null) {
     <div class="name">completed by : {{ taskItem().completed_by }}</div>
