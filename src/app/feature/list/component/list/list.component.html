@@ -5,7 +5,7 @@
 <div cdkDropList class="drag-drop-list" (cdkDropListDropped)="drop($event)">
   @for (task of taskItems; track task) {
     <div class="drag-drop-element" cdkDrag>
-      <app-task-item [taskItem]="task"></app-task-item>
+      <app-task-item [taskItem]="task" [listId]="id"></app-task-item>
     </div>
   }
 </div>
