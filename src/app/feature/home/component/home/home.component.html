@@ -1,9 +1,9 @@
 TO DO lists
 <br>
 
-<div cdkDropList class="drag-drop-list" (cdkDropListDropped)="drop($event)">
-  @for (list of lists; track list) {
-    <div class="drag-drop-element" cdkDrag>
+<div class="drag-drop-list">
+  @for (list of listItems; track list) {
+    <div>
       <app-list-item [listItem]="list"></app-list-item>
     </div>
   }

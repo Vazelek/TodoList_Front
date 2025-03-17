@@ -1,4 +1,4 @@
-<div class="content">
+<div class="content" (click)="navigationService.navigateTo('/list/' + listItem.list_id)">
   <mat-icon>list</mat-icon>
-  <div class="list-name" (click)="navigationService.navigateTo('/list/' + listItem.id)">{{ listItem.name }}</div>
+  <div>{{ listItem.list_name }}</div>
 </div>

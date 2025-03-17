@@ -1,12 +1,15 @@
-import { Component, input, Input, InputSignal } from '@angular/core';
+import {Component, inject, input, Input, InputSignal, Signal} from '@angular/core';
 import { TaskItem } from '../../../../core/type/task-item.type';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {AuthenticationStore} from '../../../../core/store/authentication.store';
+import {DatePipe} from '@angular/common';
 
 
 @Component({
   selector: 'app-task-item',
   imports: [
-    MatCheckboxModule
+    MatCheckboxModule,
+    DatePipe
   ],
   templateUrl: './task-item.component.html',
   styleUrl: './task-item.component.scss',
@@ -15,11 +18,11 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 export class TaskItemComponent {
   public taskItem: InputSignal<TaskItem> = input.required<TaskItem>();
 
-  check(checked : boolean) {
-    // TODO : send to backend
+  private readonly userEmail: string = inject(AuthenticationStore).loggedUserEmail() ?? '';
 
+  check(checked : boolean) {
     if (checked) {
-      this.taskItem().completed_by = "moi"
+      this.taskItem().completed_by = this.userEmail
     }
     else {
       this.taskItem().completed_by = null
