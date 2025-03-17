@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, effect, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray } from '@angular/cdk/drag-drop';
 import { TaskItem } from '../../../../core/type/task-item.type';
 import { TaskItemComponent } from '../../../task-item/component/task-item/task-item.component';
+import { SocketService } from '../../../../core/service/socket.service';
+
 
 
 @Component({
@@ -19,10 +21,23 @@ import { TaskItemComponent } from '../../../task-item/component/task-item/task-i
 export class ListComponent {
   id: string | null = null;
 
-  constructor(private route: ActivatedRoute) {}
-
-  ngOnInit(): void {
+  constructor(
+    private route: ActivatedRoute,
+    private socketService: SocketService
+  ) {
     this.id = this.route.snapshot.paramMap.get('id');
+
+    let defined = this.socketService.defined
+    effect(() => {
+      if (defined()) {
+        this.socketService.sendMessage("enterList", this.id);
+
+        this.socketService.onMessage("moveTaskItem").subscribe((data) => {
+          console.log(data)
+          moveItemInArray(this.tasks, data.previousIndex, data.currentIndex);
+        });
+      }
+    })
   }
 
   tasks : TaskItem[] = [
@@ -43,6 +58,9 @@ export class ListComponent {
   ];
 
   drop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.tasks, event.previousIndex, event.currentIndex);
+    if (event.previousIndex == event.currentIndex) {
+      return
+    }
+    this.socketService.sendMessage("moveTaskItem", { id: this.id, previousIndex : event.previousIndex, currentIndex : event.currentIndex })
   }
 }
