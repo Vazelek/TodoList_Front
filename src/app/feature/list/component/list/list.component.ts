@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import { Component, effect, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray } from '@angular/cdk/drag-drop';
 import { TaskItem } from '../../../../core/type/task-item.type';
@@ -13,6 +13,8 @@ import {DateAdapter, provideNativeDateAdapter} from '@angular/material/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
 import {subscribe} from 'node:diagnostics_channel';
+import { SocketService } from '../../../../core/service/socket.service';
+
 
 interface List { name: string , id: number }
 
@@ -51,10 +53,27 @@ export class ListComponent implements OnInit {
 
   private readonly http: HttpClient = inject(HttpClient);
 
-  constructor(private route: ActivatedRoute) {}
-
-  public ngOnInit(): void {
+  constructor(
+    private route: ActivatedRoute,
+    private socketService: SocketService
+  ) {
     this.id = this.route.snapshot.paramMap.get('id');
+
+    let defined = this.socketService.defined
+    effect(() => {
+      if (defined()) {
+        this.socketService.sendMessage("enterList", this.id);
+
+        this.socketService.onMessage("moveTaskItem").subscribe((data) => {
+          moveItemInArray(this.tasks, data.previousIndex, data.currentIndex);
+        });
+
+        this.socketService.onMessage("addTask").subscribe((data) => {
+          // TODO : update variable name after front connexion is done
+          this.tasks.push(data.newTask)
+        });
+      }
+    })
 
     this.http.get<List>(`${BACKEND_URI}/list/${this.id}`, { withCredentials: true}).subscribe((list: List) => {
       this.listItem = list;
@@ -71,7 +90,10 @@ export class ListComponent implements OnInit {
   }
 
   public drop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.taskItems, event.previousIndex, event.currentIndex);
+    if (event.previousIndex == event.currentIndex) {
+      return
+    }
+    this.socketService.sendMessage("moveTaskItem", { id: this.id, previousIndex : event.previousIndex, currentIndex : event.currentIndex })
   }
 
   public onNewTaskSubmit(): void {
