@@ -9,7 +9,7 @@
   <span class="gap"> {{loggedUserEmail()}}</span>
 
   @if (loggedUserEmail()) {
-    <button mat-button color="accent" (click)="authenticationStore.logout()">Log out</button>
+    <button mat-button color="accent" (click)="authenticationStore.logout(); navigationService.navigateTo('/signin')">Log out</button>
   }
   @else {
     <button mat-button color="accent" (click)="navigationService.navigateTo('/signin')">Sign In</button>
