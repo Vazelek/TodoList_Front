@@ -1,5 +1,5 @@
 import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import {TaskItem} from '../../../../core/type/task-item.type';
 import {TaskItemComponent} from '../../../task-item/component/task-item/task-item.component';
@@ -65,7 +65,8 @@ export class ListComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private router: Router,
   ) {
     this.id = this.route.snapshot.paramMap.get('id');
 
@@ -80,6 +81,20 @@ export class ListComponent implements OnInit {
 
         this.socketService.onMessage("addTask").subscribe((data) => {
           this.taskItems.push(data.task)
+        });
+
+        this.socketService.onMessage("grantAccess").subscribe((data) => {
+          this.users.push({email: data.email, has_right: 0});
+        });
+
+        this.socketService.onMessage("revokeAccess").subscribe((data) => {
+          if (this.authenticationStore.loggedUserEmail() == data.email) {
+            this.router.navigate(["/"])
+          }
+          else {
+            const index = this.users.findIndex((user: User) => user.email === data.email);
+            this.users.splice(index, 1);
+          }
         });
       }
     })
@@ -146,7 +161,20 @@ export class ListComponent implements OnInit {
       },
       {withCredentials: true}
     ).subscribe(() => {
-      this.users.push({email: this.emailFormControl.value as string, has_right: 0});
+      this.socketService.sendMessage("grantAccess", { id: this.id, email: this.emailFormControl.value as string })
+    })
+  }
+
+  public onRevokeAccess(email: string): void {
+    this.http.post(
+      `${BACKEND_URI}/lists/revoke_access`,
+      {
+        email,
+        list_id: parseInt(this.id as string),
+      },
+      {withCredentials: true}
+    ).subscribe(() => {
+      this.socketService.sendMessage("revokeAccess", { id: this.id, email: email })
     })
   }
 
