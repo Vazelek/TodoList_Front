@@ -1,17 +1,18 @@
-import {ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, inject, OnInit, Signal} from '@angular/core';
 import {MatListModule} from '@angular/material/list';
 import {MatDividerModule} from '@angular/material/divider';
 import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ListItem } from '../../../../core/type/list-item.type';
 import { ListItemComponent } from '../../../list-item/component/list-item/list-item.component';
 import {HttpClient} from '@angular/common/http';
-import {BACKEND_URI} from '../../../../core/component/constant/url.constant';
+import {BACKEND_URI} from '../../../../core/constant/url.constant';
 import {MatButton} from '@angular/material/button';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
 import {MatFormField, MatHint, MatLabel, MatSuffix} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {TaskItem} from '../../../../core/type/task-item.type';
+import {AuthenticationStore} from '../../../../core/store/authentication.store';
 
 @Component({
   selector: 'app-home',
@@ -38,6 +39,8 @@ export class HomeComponent implements OnInit {
   public listItems : ListItem[] = [];
 
   public newListFormGroup!: FormGroup;
+
+  public readonly userEmail: Signal<string | undefined> = inject(AuthenticationStore).loggedUserEmail;
 
   private nameFormControl: FormControl<string | null> = new FormControl(null, [Validators.required]);
 

@@ -2,7 +2,7 @@ import {inject} from "@angular/core";
 import {Router} from "@angular/router";
 import {catchError, of} from "rxjs";
 import {AuthenticationStore} from '../store/authentication.store';
-import {BACKEND_URI} from '../component/constant/url.constant';
+import {BACKEND_URI} from '../constant/url.constant';
 import {HttpClient} from '@angular/common/http';
 
 export const AuthGuard = (): boolean => {

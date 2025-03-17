@@ -4,7 +4,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {AuthenticationStore} from '../../../../core/store/authentication.store';
 import {DatePipe} from '@angular/common';
 import {HttpClient} from '@angular/common/http';
-import {BACKEND_URI} from '../../../../core/component/constant/url.constant';
+import {BACKEND_URI} from '../../../../core/constant/url.constant';
 
 
 @Component({

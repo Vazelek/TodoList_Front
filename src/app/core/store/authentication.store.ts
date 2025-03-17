@@ -1,6 +1,6 @@
 import {computed, inject, Injectable, OnInit, signal, Signal, WritableSignal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BACKEND_URI} from '../component/constant/url.constant';
+import {BACKEND_URI} from '../constant/url.constant';
 import {catchError, of} from 'rxjs';
 
 interface IsLoggedIn {

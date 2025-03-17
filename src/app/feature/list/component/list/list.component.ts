@@ -12,7 +12,7 @@ import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray } from '@angular/cdk
 import { TaskItem } from '../../../../core/type/task-item.type';
 import { TaskItemComponent } from '../../../task-item/component/task-item/task-item.component';
 import {HttpClient} from '@angular/common/http';
-import {BACKEND_URI} from '../../../../core/component/constant/url.constant';
+import {BACKEND_URI} from '../../../../core/constant/url.constant';
 import {ListItem} from '../../../../core/type/list-item.type';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
