@@ -177,18 +177,4 @@ export class ListComponent implements OnInit {
       this.socketService.sendMessage("revokeAccess", { id: this.id, email: email })
     })
   }
-
-  public onRevokeAccess(email: string): void {
-    this.http.post(
-      `${BACKEND_URI}/lists/revoke_access`,
-      {
-        email,
-        list_id: parseInt(this.id as string),
-      },
-      {withCredentials: true}
-    ).subscribe(() => {
-      const index = this.users.findIndex((user: User) => user.email === email);
-      this.users.splice(index, 1);
-    })
-  }
 }
