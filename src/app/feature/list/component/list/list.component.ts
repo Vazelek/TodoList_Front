@@ -1,4 +1,4 @@
-import {Component, effect, inject, OnInit} from '@angular/core';
+import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import {TaskItem} from '../../../../core/type/task-item.type';
@@ -14,6 +14,7 @@ import {MatButton} from '@angular/material/button';
 import {MatList, MatListItem} from '@angular/material/list';
 import {User} from '../../../../core/type/user.type';
 import {SocketService} from '../../../../core/service/socket.service';
+import {AuthenticationStore} from '../../../../core/store/authentication.store';
 
 interface List {
   name: string,
@@ -60,12 +61,11 @@ export class ListComponent implements OnInit {
 
   public grantAccessFormGroup!: FormGroup;
 
+  public userIsOwner: WritableSignal<boolean> = signal(false)
+  public readonly authenticationStore: AuthenticationStore = inject(AuthenticationStore);
   private nameFormControl: FormControl<string | null> = new FormControl(null, [Validators.required]);
-
   private dateFormControl: FormControl<Date | null> = new FormControl(null, [Validators.required]);
-
   private emailFormControl: FormControl<string | null> = new FormControl(null, [Validators.required, Validators.email]);
-
   private readonly http: HttpClient = inject(HttpClient);
 
   constructor(
@@ -103,6 +103,8 @@ export class ListComponent implements OnInit {
 
     this.http.get<User[]>(`${BACKEND_URI}/list/${this.id}/users`, {withCredentials: true}).subscribe((users: User[]) => {
       this.users = users;
+
+      this.userIsOwner.set(users.some((user: User) => user.email === this.authenticationStore.loggedUserEmail() && user.has_right === 1));
     })
 
     this.newTaskFormGroup = new FormGroup({
@@ -150,6 +152,20 @@ export class ListComponent implements OnInit {
       {withCredentials: true}
     ).subscribe(() => {
       this.users.push({email: this.emailFormControl.value as string, has_right: 0});
+    })
+  }
+
+  public onRevokeAccess(email: string): void {
+    this.http.post<GrantAccess>(
+      `${BACKEND_URI}/lists/revoke_access`,
+      {
+        email,
+        list_id: parseInt(this.id as string),
+      },
+      {withCredentials: true}
+    ).subscribe(() => {
+      const index = this.users.findIndex((user: User) => user.email === email);
+      this.users.slice(index, index + 1);
     })
   }
 }

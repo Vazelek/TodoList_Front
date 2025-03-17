@@ -1,3 +1,10 @@
 .user-who-have-access {
   border-top: 1px solid gray;
 }
+
+.user-who-have-access-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
