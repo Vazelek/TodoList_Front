@@ -4,4 +4,5 @@
   @if (taskItem().completed_by != null) {
     <div class="name">completed by : {{ taskItem().completed_by }}</div>
   }
+  <div>Date d'échéance : {{ taskItem().end_date | date}}</div>
 </div>

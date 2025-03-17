@@ -12,8 +12,6 @@ import {BACKEND_URI} from '../../../../core/component/constant/url.constant';
   imports: [
     MatListModule,
     MatDividerModule,
-    CdkDropList,
-    CdkDrag,
     ListItemComponent
   ],
   templateUrl: './home.component.html',
@@ -29,9 +27,5 @@ export class HomeComponent implements OnInit {
     this.http.get<ListItem[]>(`${BACKEND_URI}/lists`, { withCredentials: true}).subscribe((lists: ListItem[]) => {
       this.listItems = lists;
     })
-  }
-
-  public drop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.listItems, event.previousIndex, event.currentIndex);
   }
 }
