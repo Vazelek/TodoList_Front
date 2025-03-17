@@ -52,10 +52,17 @@ export class HomeComponent implements OnInit {
     effect(() => {
       if (defined()) {
         this.socketService.onMessage("grantAccess").subscribe((data) => {
-          // TODO : ajouter liste
+          if (data.email == this.userEmail()) {
+            this.http.get<ListItem>(`${BACKEND_URI}/list/${data.id}`, {withCredentials: true}).subscribe((list: ListItem) => {
+              this.listItems.push(list)
+            })
+          }
         });
-        this.socketService.onMessage("removeAccess").subscribe((data) => {
-          // TODO : enlever liste
+        this.socketService.onMessage("revokeAccess").subscribe((data) => {
+          if (data.email == this.userEmail()) {
+            const index = this.listItems.findIndex(obj => obj.id === data.id);
+            this.listItems.splice(index, 1)
+          }
         });
       }
     })
