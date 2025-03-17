@@ -8,3 +8,13 @@ TO DO lists
     </div>
   }
 </div>
+
+<br>
+<form (ngSubmit)="onNewListSubmit()" [formGroup]="newListFormGroup" class="list-form">
+  <mat-form-field>
+    <mat-label>List name</mat-label>
+    <input matInput placeholder="Ex. TODO List project" formControlName="name">
+  </mat-form-field>
+
+  <button mat-flat-button [disabled]="!newListFormGroup.dirty || !newListFormGroup.valid">Add new list</button>
+</form>
