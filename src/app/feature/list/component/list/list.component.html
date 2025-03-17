@@ -11,8 +11,7 @@
 </div>
 
 <br>
-
-<form (ngSubmit)="onNewTaskSubmit()" [formGroup]="newTaskFormGroup" class="task-form">
+<form (ngSubmit)="onNewTaskSubmit()" [formGroup]="newTaskFormGroup" class="list-form">
   <mat-form-field>
     <mat-label>Task</mat-label>
     <input matInput placeholder="Ex. Finish the project" formControlName="name">
@@ -27,4 +26,24 @@
   </mat-form-field>
 
   <button mat-flat-button [disabled]="!newTaskFormGroup.dirty || !newTaskFormGroup.valid">Add new task</button>
+</form>
+
+<hr>
+<br>
+Users who have access to this TODO list :
+<mat-list>
+  @for (user of users; track $index) {
+    <mat-list-item class="user-who-have-access">{{ user.email }}</mat-list-item>
+  }
+</mat-list>
+
+<br>
+
+<form (ngSubmit)="onGrantAccessSubmit()" [formGroup]="grantAccessFormGroup" class="list-form">
+  <mat-form-field>
+    <mat-label>User email</mat-label>
+    <input matInput formControlName="email" type="email">
+  </mat-form-field>
+
+  <button mat-flat-button [disabled]="!grantAccessFormGroup.dirty || !grantAccessFormGroup.valid">Grant access to user</button>
 </form>

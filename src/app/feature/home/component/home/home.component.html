@@ -1,10 +1,25 @@
+<div class="home">
+  <img src="/assets/bee_logo.jpg" alt="">
+  <h1>Welcome {{ userEmail() }}</h1>
+</div>
+
 TO DO lists
 <br>
 
 <div class="drag-drop-list">
-  @for (list of listItems; track list) {
+  @for (list of listItems; track $index) {
     <div>
-      <app-list-item [listItem]="list"></app-list-item>
+      <app-list-item [listItem]="list"/>
     </div>
   }
 </div>
+
+<br>
+<form (ngSubmit)="onNewListSubmit()" [formGroup]="newListFormGroup" class="list-form">
+  <mat-form-field>
+    <mat-label>List name</mat-label>
+    <input matInput placeholder="Ex. TODO List project" formControlName="name">
+  </mat-form-field>
+
+  <button mat-flat-button [disabled]="!newListFormGroup.dirty || !newListFormGroup.valid">Add new list</button>
+</form>

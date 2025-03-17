@@ -18,7 +18,6 @@ import {HttpClient, HttpClientModule, provideHttpClient} from '@angular/common/h
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent {
   public readonly authenticationStore: AuthenticationStore = inject(AuthenticationStore);

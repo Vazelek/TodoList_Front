@@ -1,22 +1,29 @@
-import { Component, effect, inject, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray } from '@angular/cdk/drag-drop';
-import { TaskItem } from '../../../../core/type/task-item.type';
-import { TaskItemComponent } from '../../../task-item/component/task-item/task-item.component';
+import {Component, effect, inject, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+import {TaskItem} from '../../../../core/type/task-item.type';
+import {TaskItemComponent} from '../../../task-item/component/task-item/task-item.component';
 import {HttpClient} from '@angular/common/http';
-import {BACKEND_URI} from '../../../../core/component/constant/url.constant';
-import {ListItem} from '../../../../core/type/list-item.type';
+import {BACKEND_URI} from '../../../../core/constant/url.constant';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle, MatDateRangePicker} from '@angular/material/datepicker';
-import {DateAdapter, provideNativeDateAdapter} from '@angular/material/core';
+import {provideNativeDateAdapter} from '@angular/material/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
-import {subscribe} from 'node:diagnostics_channel';
-import { SocketService } from '../../../../core/service/socket.service';
+import {MatList, MatListItem} from '@angular/material/list';
+import {User} from '../../../../core/type/user.type';
+import {SocketService} from '../../../../core/service/socket.service';
 
+interface List {
+  name: string,
+  id: number
+}
 
-interface List { name: string , id: number }
+interface GrantAccess {
+  email: string,
+  list_id: number
+}
 
 @Component({
   selector: 'app-list',
@@ -31,7 +38,9 @@ interface List { name: string , id: number }
     MatDatepickerInput,
     MatDatepickerToggle,
     ReactiveFormsModule,
-    MatButton
+    MatButton,
+    MatList,
+    MatListItem
   ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss',
@@ -41,15 +50,21 @@ interface List { name: string , id: number }
 export class ListComponent implements OnInit {
   public id: string | null = null;
 
-  public taskItems : TaskItem[] = [];
+  public taskItems: TaskItem[] = [];
 
-  public listItem : List | undefined = undefined;
+  public listItem: List | undefined = undefined;
+
+  public users: User[] = [];
 
   public newTaskFormGroup!: FormGroup;
+
+  public grantAccessFormGroup!: FormGroup;
 
   private nameFormControl: FormControl<string | null> = new FormControl(null, [Validators.required]);
 
   private dateFormControl: FormControl<Date | null> = new FormControl(null, [Validators.required]);
+
+  private emailFormControl: FormControl<string | null> = new FormControl(null, [Validators.required, Validators.email]);
 
   private readonly http: HttpClient = inject(HttpClient);
 
@@ -69,24 +84,34 @@ export class ListComponent implements OnInit {
         });
 
         this.socketService.onMessage("addTask").subscribe((data) => {
-          this.taskItems.push(data.task);
+          this.taskItems.push(data.task)
         });
       }
     })
   }
 
-  ngOnInit(): void {
-    this.http.get<List>(`${BACKEND_URI}/list/${this.id}`, { withCredentials: true}).subscribe((list: List) => {
+  public ngOnInit(): void {
+    this.id = this.route.snapshot.paramMap.get('id');
+
+    this.http.get<List>(`${BACKEND_URI}/list/${this.id}`, {withCredentials: true}).subscribe((list: List) => {
       this.listItem = list;
     })
 
-    this.http.get<TaskItem[]>(`${BACKEND_URI}/list/${this.id}/items`, { withCredentials: true}).subscribe((tasks: TaskItem[]) => {
-      this.taskItems = tasks.sort((a, b) =>  a.position - b.position);
+    this.http.get<TaskItem[]>(`${BACKEND_URI}/list/${this.id}/items`, {withCredentials: true}).subscribe((tasks: TaskItem[]) => {
+      this.taskItems = tasks.sort((a, b) => a.position - b.position);
+    })
+
+    this.http.get<User[]>(`${BACKEND_URI}/list/${this.id}/users`, {withCredentials: true}).subscribe((users: User[]) => {
+      this.users = users;
     })
 
     this.newTaskFormGroup = new FormGroup({
       name: this.nameFormControl,
       endDate: this.dateFormControl,
+    })
+
+    this.grantAccessFormGroup = new FormGroup({
+      email: this.emailFormControl,
     })
   }
 
@@ -94,14 +119,14 @@ export class ListComponent implements OnInit {
     if (event.previousIndex == event.currentIndex) {
       return
     }
-    this.socketService.sendMessage("moveTaskItem", { id: this.id, previousIndex : event.previousIndex, currentIndex : event.currentIndex })
+    this.socketService.sendMessage("moveTaskItem", {
+      id: this.id,
+      previousIndex: event.previousIndex,
+      currentIndex: event.currentIndex
+    })
   }
 
   public onNewTaskSubmit(): void {
-    if (!this.nameFormControl.value || !this.dateFormControl.value) {
-      return
-    }
-    
     this.http.post<TaskItem>(
       `${BACKEND_URI}/list/${this.id}/new`,
       {
@@ -109,9 +134,22 @@ export class ListComponent implements OnInit {
         end_date: this.dateFormControl.value?.toString(),
         position: this.taskItems.length,
       },
-      { withCredentials: true }
+      {withCredentials: true}
     ).subscribe((task: TaskItem) => {
-      this.socketService.sendMessage("addTask", { id: this.id, task: task })
+      this.socketService.sendMessage("addTask", {id: this.id, task: task})
+    })
+  }
+
+  public onGrantAccessSubmit(): void {
+    this.http.post<GrantAccess>(
+      `${BACKEND_URI}/lists/grant_access`,
+      {
+        email: this.emailFormControl.value,
+        list_id: parseInt(this.id as string),
+      },
+      {withCredentials: true}
+    ).subscribe(() => {
+      this.users.push({email: this.emailFormControl.value as string, has_right: 0});
     })
   }
 }

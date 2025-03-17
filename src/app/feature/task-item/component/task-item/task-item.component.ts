@@ -1,9 +1,11 @@
-import {Component, effect, inject, input, Input, InputSignal, Signal} from '@angular/core';
-import { TaskItem } from '../../../../core/type/task-item.type';
-import {MatCheckboxChange, MatCheckboxModule} from '@angular/material/checkbox';
-import { SocketService } from '../../../../core/service/socket.service';
-import { AuthenticationStore } from '../../../../core/store/authentication.store';
+import {Component, effect, inject, input, Input, InputSignal} from '@angular/core';
+import {TaskItem} from '../../../../core/type/task-item.type';
 import {DatePipe} from '@angular/common';
+import {HttpClient} from '@angular/common/http';
+import {BACKEND_URI} from '../../../../core/constant/url.constant';
+import {MatCheckboxChange, MatCheckboxModule} from '@angular/material/checkbox';
+import {SocketService} from '../../../../core/service/socket.service';
+import {AuthenticationStore} from '../../../../core/store/authentication.store';
 
 
 @Component({
@@ -20,7 +22,9 @@ export class TaskItemComponent {
   public taskItem: InputSignal<TaskItem> = input.required<TaskItem>();
   @Input({required: true}) listId !: string | null
 
-  private loggedUserEmail = inject(AuthenticationStore).loggedUserEmail
+  private readonly userEmail: string = inject(AuthenticationStore).loggedUserEmail() ?? '';
+
+  private readonly http: HttpClient = inject(HttpClient);
 
   constructor(
     private socketService: SocketService
@@ -32,8 +36,7 @@ export class TaskItemComponent {
           if (data.taskId == this.taskItem().id.toString()) {
             if (data.checkedValue) {
               this.taskItem().completed_by = data.userEmail
-            }
-            else {
+            } else {
               this.taskItem().completed_by = null
             }
           }
@@ -42,12 +45,15 @@ export class TaskItemComponent {
     })
   }
 
-  check(event : MatCheckboxChange) {
+  public check(event: MatCheckboxChange) {
     this.socketService.sendMessage("checked", {
       id: this.listId,
-      userEmail: this.loggedUserEmail(),
+      userEmail: this.userEmail,
       checkedValue: event.checked,
       taskId: this.taskItem().id
     })
+    this.taskItem().completed_by = event.checked ? this.userEmail : null;
+
+    this.http.put(`${BACKEND_URI}/list/update`, this.taskItem(), {withCredentials: true}).subscribe();
   }
 }

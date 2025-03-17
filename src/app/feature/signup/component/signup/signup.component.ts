@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { NavigationService } from '../../../../core/service/navigation.service';
 import {HttpClient, HttpClientModule, HttpHandler} from '@angular/common/http';
-import {BACKEND_URI} from '../../../../core/component/constant/url.constant';
+import {BACKEND_URI} from '../../../../core/constant/url.constant';
 import {User} from '../../../../core/type/user.type';
 import {Router} from '@angular/router';
 
