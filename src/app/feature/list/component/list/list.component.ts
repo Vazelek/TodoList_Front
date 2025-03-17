@@ -69,8 +69,7 @@ export class ListComponent implements OnInit {
         });
 
         this.socketService.onMessage("addTask").subscribe((data) => {
-          // TODO : update variable name after front connexion is done
-          this.taskItems.push(data.newTask)
+          this.taskItems.push(data.task);
         });
       }
     })
@@ -99,6 +98,10 @@ export class ListComponent implements OnInit {
   }
 
   public onNewTaskSubmit(): void {
+    if (!this.nameFormControl.value || !this.dateFormControl.value) {
+      return
+    }
+    
     this.http.post<TaskItem>(
       `${BACKEND_URI}/list/${this.id}/new`,
       {
@@ -108,7 +111,7 @@ export class ListComponent implements OnInit {
       },
       { withCredentials: true }
     ).subscribe((task: TaskItem) => {
-      this.taskItems.push(task);
+      this.socketService.sendMessage("addTask", { id: this.id, task: task })
     })
   }
 }
