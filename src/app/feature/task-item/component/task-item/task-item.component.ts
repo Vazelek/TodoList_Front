@@ -3,7 +3,6 @@ import { TaskItem } from '../../../../core/type/task-item.type';
 import {MatCheckboxChange, MatCheckboxModule} from '@angular/material/checkbox';
 import { SocketService } from '../../../../core/service/socket.service';
 import { AuthenticationStore } from '../../../../core/store/authentication.store';
-import {AuthenticationStore} from '../../../../core/store/authentication.store';
 import {DatePipe} from '@angular/common';
 
 

@@ -65,16 +65,18 @@ export class ListComponent implements OnInit {
         this.socketService.sendMessage("enterList", this.id);
 
         this.socketService.onMessage("moveTaskItem").subscribe((data) => {
-          moveItemInArray(this.tasks, data.previousIndex, data.currentIndex);
+          moveItemInArray(this.taskItems, data.previousIndex, data.currentIndex);
         });
 
         this.socketService.onMessage("addTask").subscribe((data) => {
           // TODO : update variable name after front connexion is done
-          this.tasks.push(data.newTask)
+          this.taskItems.push(data.newTask)
         });
       }
     })
+  }
 
+  ngOnInit(): void {
     this.http.get<List>(`${BACKEND_URI}/list/${this.id}`, { withCredentials: true}).subscribe((list: List) => {
       this.listItem = list;
     })

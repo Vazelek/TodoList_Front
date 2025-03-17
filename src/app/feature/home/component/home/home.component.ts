@@ -20,16 +20,11 @@ import {BACKEND_URI} from '../../../../core/component/constant/url.constant';
   standalone: true
 })
 export class HomeComponent implements OnInit {
-  lists : ListItem[] = [
-    {id: 1, name: "name1"},
-    {id: 2, name: "name2"},
-    {id: 3, name: "name3"},
-    {id: 4, name: "name4"},
-    {id: 5, name: "name5"},
-  ];
+  listItems : ListItem[] = []
 
   constructor(
-    private socketService: SocketService
+    private socketService: SocketService,
+    private http: HttpClient
   ) {
     let defined = this.socketService.defined
     effect(() => {
@@ -51,6 +46,6 @@ export class HomeComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.lists, event.previousIndex, event.currentIndex);
+    moveItemInArray(this.listItems, event.previousIndex, event.currentIndex);
   }
 }
