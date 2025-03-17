@@ -4,28 +4,29 @@
       <mat-card-title>Sign up<br><br></mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>email</mat-label>
-          <input matInput type="email" formControlName="email" (blur)="updateEmailErrorMessage()"/>
-          <mat-error>{{emailErrorMessage()}}</mat-error>
+          <input (blur)="updateEmailErrorMessage()" formControlName="email" matInput type="email"/>
+          <mat-error>{{ emailErrorMessage() }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Password</mat-label>
-          <input matInput type="password" formControlName="password" (blur)="updatePasswordErrorMessage()"/>
-          <mat-error>{{passwordErrorMessage()}}</mat-error>
+          <input (blur)="updatePasswordErrorMessage()" formControlName="password" matInput type="password"/>
+          <mat-error>{{ passwordErrorMessage() }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Verify password</mat-label>
-          <input matInput type="password" formControlName="passwordCheck" (blur)="updatePasswordCheckErrorMessage()" (input)="checkPasswordCheck()"/>
-          <mat-error>{{passwordCheckErrorMessage()}}</mat-error>
+          <input (blur)="updatePasswordCheckErrorMessage()" (input)="checkPasswordCheck()" formControlName="passwordCheck" matInput
+                 type="password"/>
+          <mat-error>{{ passwordCheckErrorMessage() }}</mat-error>
         </mat-form-field>
 
         <div>
-          Already have an account ? 
-          <a (click)="navigationService.navigateTo('/signin')" class="mat-primary">
+          Already have an account ?
+          <a (click)="navigationService.navigateTo('/signin')" class="link">
             sign in
           </a>
         </div>
@@ -33,7 +34,7 @@
         <br>
 
         <div class="actions">
-          <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">
+          <button [disabled]="loginForm.invalid" color="primary" mat-raised-button type="submit">
             Sign up
           </button>
         </div>
