@@ -35,6 +35,11 @@ export class ListComponent {
         this.socketService.onMessage("moveTaskItem").subscribe((data) => {
           moveItemInArray(this.tasks, data.previousIndex, data.currentIndex);
         });
+
+        this.socketService.onMessage("addTask").subscribe((data) => {
+          // TODO : update variable name after front connexion is done
+          this.tasks.push(data.newTask)
+        });
       }
     })
   }
