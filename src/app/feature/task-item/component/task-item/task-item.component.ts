@@ -1,6 +1,7 @@
 import { Component, input, Input, InputSignal } from '@angular/core';
 import { TaskItem } from '../../../../core/type/task-item.type';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { SocketService } from '../../../../core/service/socket.service';
 
 
 @Component({
@@ -14,6 +15,10 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 })
 export class TaskItemComponent {
   public taskItem: InputSignal<TaskItem> = input.required<TaskItem>();
+
+  constructor(
+    private socketService: SocketService
+  ) {}
 
   check(checked : boolean) {
     // TODO : send to backend
