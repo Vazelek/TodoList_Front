@@ -1,5 +1,5 @@
 import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import {TaskItem} from '../../../../core/type/task-item.type';
 import {TaskItemComponent} from '../../../task-item/component/task-item/task-item.component';
@@ -65,7 +65,8 @@ export class ListComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private router: Router,
   ) {
     this.id = this.route.snapshot.paramMap.get('id');
 
@@ -87,7 +88,13 @@ export class ListComponent implements OnInit {
         });
 
         this.socketService.onMessage("revokeAccess").subscribe((data) => {
-          
+          if (this.authenticationStore.loggedUserEmail() == data.email) {
+            this.router.navigate(["/"])
+          }
+          else {
+            const index = this.users.findIndex((user: User) => user.email === data.email);
+            this.users.splice(index, 1);
+          }
         });
       }
     })
@@ -167,8 +174,7 @@ export class ListComponent implements OnInit {
       },
       {withCredentials: true}
     ).subscribe(() => {
-      const index = this.users.findIndex((user: User) => user.email === email);
-      this.users.splice(index, 1);
+      this.socketService.sendMessage("revokeAccess", { id: this.id, email: email })
     })
   }
 }
