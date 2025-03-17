@@ -9,3 +9,22 @@
     </div>
   }
 </div>
+
+<br>
+
+<form (ngSubmit)="onNewTaskSubmit()" [formGroup]="newTaskFormGroup" class="task-form">
+  <mat-form-field>
+    <mat-label>Task</mat-label>
+    <input matInput placeholder="Ex. Finish the project" formControlName="name">
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Due date</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="endDate">
+    <mat-hint>MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <button mat-flat-button [disabled]="!newTaskFormGroup.dirty || !newTaskFormGroup.valid">Add new task</button>
+</form>
