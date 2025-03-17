@@ -85,6 +85,10 @@ export class ListComponent implements OnInit {
         this.socketService.onMessage("grantAccess").subscribe((data) => {
           this.users.push({email: data.email, has_right: 0});
         });
+
+        this.socketService.onMessage("revokeAccess").subscribe((data) => {
+          
+        });
       }
     })
   }
