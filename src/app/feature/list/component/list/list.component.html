@@ -1,8 +1,8 @@
-<span>Tasks of list "{{ listItem ? listItem.name : ""}}"</span>
+<span>Tasks of list "{{ listItem ? listItem.name : "" }}"</span>
 
 <br>
 
-<div cdkDropList class="drag-drop-list" (cdkDropListDropped)="drop($event)">
+<div (cdkDropListDropped)="drop($event)" cdkDropList class="drag-drop-list">
   @for (task of taskItems; track task) {
     <div class="drag-drop-element" cdkDrag>
       <app-task-item [taskItem]="task" [listId]="id"></app-task-item>
@@ -14,18 +14,18 @@
 <form (ngSubmit)="onNewTaskSubmit()" [formGroup]="newTaskFormGroup" class="list-form">
   <mat-form-field>
     <mat-label>Task</mat-label>
-    <input matInput placeholder="Ex. Finish the project" formControlName="name">
+    <input formControlName="name" matInput placeholder="Ex. Finish the project">
   </mat-form-field>
 
   <mat-form-field>
     <mat-label>Due date</mat-label>
-    <input matInput [matDatepicker]="picker" formControlName="endDate">
+    <input [matDatepicker]="picker" formControlName="endDate" matInput>
     <mat-hint>MM/DD/YYYY</mat-hint>
-    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker-toggle [for]="picker" matIconSuffix></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
 
-  <button mat-flat-button [disabled]="!newTaskFormGroup.dirty || !newTaskFormGroup.valid">Add new task</button>
+  <button [disabled]="!newTaskFormGroup.dirty || !newTaskFormGroup.valid" mat-flat-button>Add new task</button>
 </form>
 
 <hr>
@@ -33,7 +33,14 @@
 Users who have access to this TODO list :
 <mat-list>
   @for (user of users; track $index) {
-    <mat-list-item class="user-who-have-access">{{ user.email }}</mat-list-item>
+    <mat-list-item class="user-who-have-access">
+      <span class="user-who-have-access-content">
+        <span>{{ user.email }}</span>
+        <button mat-button (click)="onRevokeAccess(user.email)"
+                [disabled]="!userIsOwner() || user.email === authenticationStore.loggedUserEmail()">Revoke access</button>
+      </span>
+
+    </mat-list-item>
   }
 </mat-list>
 
@@ -42,8 +49,9 @@ Users who have access to this TODO list :
 <form (ngSubmit)="onGrantAccessSubmit()" [formGroup]="grantAccessFormGroup" class="list-form">
   <mat-form-field>
     <mat-label>User email</mat-label>
-    <input matInput formControlName="email" type="email">
+    <input formControlName="email" matInput type="email">
   </mat-form-field>
 
-  <button mat-flat-button [disabled]="!grantAccessFormGroup.dirty || !grantAccessFormGroup.valid">Grant access to user</button>
+  <button [disabled]="!grantAccessFormGroup.dirty || !grantAccessFormGroup.valid" mat-flat-button>Grant access to user
+  </button>
 </form>
