@@ -86,6 +86,10 @@ export class ListComponent implements OnInit {
         this.socketService.onMessage("addTask").subscribe((data) => {
           this.taskItems.push(data.task)
         });
+
+        this.socketService.onMessage("grantAccess").subscribe((data) => {
+          this.users.push({email: data.email, has_right: 0});
+        });
       }
     })
   }
@@ -149,7 +153,7 @@ export class ListComponent implements OnInit {
       },
       {withCredentials: true}
     ).subscribe(() => {
-      this.users.push({email: this.emailFormControl.value as string, has_right: 0});
+      this.socketService.sendMessage("grantAccess", { id: this.id, email: this.emailFormControl.value as string })
     })
   }
 }
