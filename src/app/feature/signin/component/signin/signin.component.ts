@@ -1,13 +1,13 @@
 import {Component, inject, signal} from '@angular/core';
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-import { NavigationService } from '../../../../core/service/navigation.service';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {NavigationService} from '../../../../core/service/navigation.service';
+import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {BACKEND_URI} from '../../../../core/constant/url.constant';
 import {User} from '../../../../core/type/user.type';
@@ -33,6 +33,7 @@ export class SigninComponent {
 
   emailErrorMessage = signal('');
   passwordErrorMessage = signal('');
+  credentialsErrorMessage = signal('');
 
   private readonly http: HttpClient = inject(HttpClient);
 
@@ -42,7 +43,7 @@ export class SigninComponent {
 
   constructor(
     private fb: FormBuilder,
-    protected navigationService : NavigationService
+    protected navigationService: NavigationService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -63,8 +64,10 @@ export class SigninComponent {
       error: (error: any) => {
         if (error.status === 401) {
           console.error('Login failed: Forbidden', error);
+          this.credentialsErrorMessage.set('Invalid credentials')
         } else {
           console.error('Login failed:', error);
+          this.credentialsErrorMessage.set('Invalid credentials')
         }
       }
     });
