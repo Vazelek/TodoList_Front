@@ -21,11 +21,6 @@ interface List {
   id: number
 }
 
-interface GrantAccess {
-  email: string,
-  list_id: number
-}
-
 @Component({
   selector: 'app-list',
   imports: [
@@ -143,7 +138,7 @@ export class ListComponent implements OnInit {
   }
 
   public onGrantAccessSubmit(): void {
-    this.http.post<GrantAccess>(
+    this.http.post(
       `${BACKEND_URI}/lists/grant_access`,
       {
         email: this.emailFormControl.value,
@@ -156,7 +151,7 @@ export class ListComponent implements OnInit {
   }
 
   public onRevokeAccess(email: string): void {
-    this.http.post<GrantAccess>(
+    this.http.post(
       `${BACKEND_URI}/lists/revoke_access`,
       {
         email,
@@ -165,7 +160,7 @@ export class ListComponent implements OnInit {
       {withCredentials: true}
     ).subscribe(() => {
       const index = this.users.findIndex((user: User) => user.email === email);
-      this.users.slice(index, index + 1);
+      this.users.splice(index, 1);
     })
   }
 }
