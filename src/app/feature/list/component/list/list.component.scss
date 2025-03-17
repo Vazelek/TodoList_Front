@@ -1,6 +1,10 @@
-.task-form {
+.list-form {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 1rem;
+}
+
+.user-who-have-access {
+  border-top: 1px solid gray;
 }
